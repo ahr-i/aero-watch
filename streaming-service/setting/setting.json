@@ -1,0 +1,12 @@
+{
+    "server_port": "40004",
+    "rtmp_port": "1935",
+    "hls_root": "./hls",
+    "hls_time_seconds": 1,
+    "hls_list_size": 4,
+    "stream_timeout_seconds": 10,
+    "drone_service": "http://localhost:8081",
+    "drone_validate_path": "/internal/drone/validate",
+    "drone_validate_enabled": false,
+    "ffmpeg_path": "ffmpeg"
+}

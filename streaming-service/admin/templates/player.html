@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{.StreamKey}} - Aero Watch</title>
+	<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+	<style>
+		body { margin: 0; font-family: Arial, sans-serif; background: #101820; color: white; }
+		header { padding: 20px 28px; display: flex; gap: 16px; align-items: center; }
+		a { color: #8cc8ff; text-decoration: none; }
+		main { max-width: 1080px; margin: 0 auto; padding: 0 20px 32px; }
+		.player { position: relative; background: black; }
+		video { width: 100%; display: block; background: black; aspect-ratio: 16 / 9; }
+		.overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; color: #dce6ef; background: rgba(0, 0, 0, 0.55); }
+		.overlay.hidden { display: none; }
+		.status { margin: 14px 0; display: flex; gap: 10px; align-items: center; color: #cfd7df; font-size: 14px; }
+		.badge { display: inline-block; padding: 3px 8px; border-radius: 999px; background: #24313d; color: #cfd7df; font-size: 12px; font-weight: 700; }
+		.badge.live { background: #123d27; color: #92ffbf; }
+		.badge.offline { background: #492323; color: #ffb4a8; }
+		.meta { color: #9fabba; word-break: break-all; font-size: 13px; }
+	</style>
+</head>
+<body>
+	<header><a href="/admin/streams">← 목록</a><h1>{{.StreamKey}}</h1></header>
+	<main>
+		<div class="player">
+			<video id="stream-player" controls autoplay muted playsinline></video>
+			<div id="player-message" class="overlay">라이브 영상을 준비하는 중입니다.</div>
+		</div>
+		<div class="status">
+			<span id="stream-badge" class="badge">CHECKING</span>
+			<span id="stream-status">상태 확인 중...</span>
+		</div>
+		<div class="meta">재생 주소: {{.HLSURL}}</div>
+	</main>
+	<script>
+		const group = "{{.Group}}";
+		const code = "{{.Code}}";
+		const video = document.getElementById("stream-player");
+		const badge = document.getElementById("stream-badge");
+		const status = document.getElementById("stream-status");
+		const message = document.getElementById("player-message");
+		const hlsUrl = "{{.HLSURL}}";
+		let hls = null;
+
+		function setState(state, text, detail) {
+			badge.textContent = state;
+			badge.className = "badge " + (state === "LIVE" ? "live" : state === "OFFLINE" ? "offline" : "");
+			status.textContent = text;
+			message.textContent = detail || text;
+			message.classList.toggle("hidden", state === "LIVE" && video.readyState > 0);
+		}
+
+		function startPlayer() {
+			if (hls || video.src) {
+				return;
+			}
+
+			if (window.Hls && Hls.isSupported()) {
+				hls = new Hls({
+					liveDurationInfinity: true,
+					liveSyncDurationCount: 1,
+					liveMaxLatencyDurationCount: 3
+				});
+				hls.loadSource(hlsUrl);
+				hls.attachMedia(video);
+				hls.on(Hls.Events.MANIFEST_PARSED, () => {
+					video.play();
+				});
+				hls.on(Hls.Events.LEVEL_LOADED, (_, data) => {
+					if (!data.details.live) {
+						setState("OFFLINE", "스트림이 종료되었습니다.", "송출이 종료됨");
+						return;
+					}
+
+					setState("LIVE", "라이브 재생 중", "");
+					if (hls.liveSyncPosition && Math.abs(video.currentTime - hls.liveSyncPosition) > 6) {
+						video.currentTime = hls.liveSyncPosition;
+					}
+				});
+				hls.on(Hls.Events.ERROR, (_, data) => {
+					if (data.fatal) {
+						setState("CHECKING", "재생 데이터를 기다리는 중", "영상 조각이 아직 준비되지 않았거나 연결이 끊김");
+						hls.destroy();
+						hls = null;
+						setTimeout(startPlayer, 2000);
+					}
+				});
+				return;
+			}
+
+			if (video.canPlayType("application/vnd.apple.mpegurl")) {
+				video.src = hlsUrl;
+				video.play();
+				return;
+			}
+
+			setState("OFFLINE", "브라우저가 라이브 재생을 지원하지 않습니다.", "다른 브라우저에서 다시 확인해 주세요.");
+		}
+
+		async function refreshStatus() {
+			try {
+				const response = await fetch("/api/v1/streams/" + encodeURIComponent(group) + "/" + encodeURIComponent(code), { cache: "no-store" });
+				const stream = await response.json();
+				if (stream.status === "LIVE") {
+					setState("LIVE", "라이브 재생 중", "");
+					startPlayer();
+					return;
+				}
+
+				setState("OFFLINE", "스트림이 종료되었습니다.", "");
+			} catch (error) {
+				setState("CHECKING", "상태 갱신 실패", "잠시 후 다시 확인합니다.");
+			}
+		}
+
+		video.addEventListener("playing", () => {
+			message.classList.add("hidden");
+		});
+		video.addEventListener("waiting", () => {
+			if (badge.textContent === "LIVE") {
+				message.textContent = "새 영상 조각을 기다리는 중입니다.";
+				message.classList.remove("hidden");
+			}
+		});
+
+		refreshStatus();
+		setInterval(refreshStatus, 3000);
+	</script>
+</body>
+</html>

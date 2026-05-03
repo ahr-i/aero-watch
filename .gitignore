@@ -3,3 +3,5 @@ AGENTS.md
 .venv/
 __pycache__
 stitch-assets/
+stitch/
+hls/
