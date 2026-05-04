@@ -17,6 +17,14 @@ type streamRequestBody struct {
 	Code  string `json:"code"`
 }
 
+type streamCaptureResponseBody struct {
+	Group       string `json:"group"`
+	Code        string `json:"code"`
+	Status      string `json:"status"`
+	ImageBase64 string `json:"imageBase64"`
+	ImageType   string `json:"imageType"`
+}
+
 type streamResponseBody struct {
 	Group     string `json:"group"`
 	Code      string `json:"code"`

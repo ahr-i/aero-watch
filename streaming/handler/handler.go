@@ -13,6 +13,8 @@ func CreateHandler() *Handler {
 
 	// 특정 드론 스트림의 HLS 재생 주소를 반환
 	mux.HandleFunc("/api/v1/streams/hls", handler.hlsStreamHandler).Methods("POST")
+	// 특정 드론 스트림의 현재 화면을 캡쳐해서 base64로 반환
+	mux.HandleFunc("/api/v1/streams/capture", handler.captureStreamHandler).Methods("POST")
 	// 현재 RTMP로 들어오고 있는 모든 드론 스트림 목록을 반환
 	mux.HandleFunc("/api/v1/streams/live", handler.liveStreamsHandler).Methods("GET")
 	// 특정 드론의 스트리밍 상태를 반환

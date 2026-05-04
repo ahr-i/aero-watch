@@ -2,6 +2,7 @@
     "server_port": "40004",
     "rtmp_port": "1935",
     "hls_root": "./hls",
+    "capture_root": "./captures",
     "hls_time_seconds": 1,
     "hls_list_size": 4,
     "stream_timeout_seconds": 10,
