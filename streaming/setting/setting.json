@@ -5,8 +5,8 @@
     "hls_time_seconds": 1,
     "hls_list_size": 4,
     "stream_timeout_seconds": 10,
-    "drone_service": "http://localhost:8081",
+    "drone_service": "http://localhost:40002",
     "drone_validate_path": "/internal/drone/validate",
-    "drone_validate_enabled": false,
+    "drone_validate_enabled": true,
     "ffmpeg_path": "ffmpeg"
 }

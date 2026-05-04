@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -273,12 +274,18 @@ func validateDrone(group string, code string) bool {
 	}
 
 	validateURL.Path = path.Join(validateURL.Path, setting.Setting.DroneValidatePath)
-	query := validateURL.Query()
-	query.Set("group", group)
-	query.Set("code", code)
-	validateURL.RawQuery = query.Encode()
 
-	resp, err := http.Get(validateURL.String())
+	body := map[string]string{
+		"group": group,
+		"code":  code,
+	}
+	jsonData, err := json.Marshal(body)
+	if err != nil {
+		logging.Error(fmt.Sprintf("drone validation marshal failed: %v", err))
+		return false
+	}
+
+	resp, err := http.Post(validateURL.String(), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		logging.Error(fmt.Sprintf("drone validation failed: %v", err))
 		return false
