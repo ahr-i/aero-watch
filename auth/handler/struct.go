@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/ahr-i/auth/db"
+	"github.com/ahr-i/aero-watch/auth/db"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/unrolled/render"
 )

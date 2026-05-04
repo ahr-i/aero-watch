@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/ahr-i/aero-watch/setting"
+	"github.com/ahr-i/aero-watch/streaming/setting"
 )
 
 func (h *Handler) hlsFileHandler(w http.ResponseWriter, r *http.Request) {

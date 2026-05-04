@@ -1,4 +1,4 @@
-module github.com/ahr-i/aero-watch
+module github.com/ahr-i/aero-watch/streaming
 
 go 1.24
 

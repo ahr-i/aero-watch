@@ -1,4 +1,4 @@
-module github.com/ahr-i/auth
+module github.com/ahr-i/aero-watch/auth
 
 go 1.24
 

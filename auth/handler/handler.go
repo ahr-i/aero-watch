@@ -3,8 +3,8 @@ package handler
 import (
 	"os"
 
-	"github.com/ahr-i/auth/db"
-	"github.com/ahr-i/auth/utils/logging"
+	"github.com/ahr-i/aero-watch/auth/db"
+	"github.com/ahr-i/aero-watch/auth/utils/logging"
 	"github.com/gorilla/mux"
 )
 

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ahr-i/auth/setting"
+	"github.com/ahr-i/aero-watch/auth/setting"
 )
 
 var ErrUserAlreadyExists = errors.New("user already exists")

@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ahr-i/aero-watch/setting"
-	"github.com/ahr-i/aero-watch/utils/logging"
+	"github.com/ahr-i/aero-watch/streaming/setting"
+	"github.com/ahr-i/aero-watch/streaming/utils/logging"
 )
 
 const (

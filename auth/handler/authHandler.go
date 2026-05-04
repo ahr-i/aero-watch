@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ahr-i/auth/db"
-	"github.com/ahr-i/auth/setting"
+	"github.com/ahr-i/aero-watch/auth/db"
+	"github.com/ahr-i/aero-watch/auth/setting"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )

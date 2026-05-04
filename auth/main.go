@@ -3,10 +3,10 @@ package main
 import (
 	"net/http"
 
-	"github.com/ahr-i/auth/handler"
-	"github.com/ahr-i/auth/setting"
-	"github.com/ahr-i/auth/utils/corsController"
-	"github.com/ahr-i/auth/utils/logging"
+	"github.com/ahr-i/aero-watch/auth/handler"
+	"github.com/ahr-i/aero-watch/auth/setting"
+	"github.com/ahr-i/aero-watch/auth/utils/corsController"
+	"github.com/ahr-i/aero-watch/auth/utils/logging"
 
 	"github.com/urfave/negroni"
 )

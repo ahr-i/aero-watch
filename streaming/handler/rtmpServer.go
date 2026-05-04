@@ -15,8 +15,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ahr-i/aero-watch/setting"
-	"github.com/ahr-i/aero-watch/utils/logging"
+	"github.com/ahr-i/aero-watch/streaming/setting"
+	"github.com/ahr-i/aero-watch/streaming/utils/logging"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/yutopp/go-flv"
