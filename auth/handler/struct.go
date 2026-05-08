@@ -41,9 +41,9 @@ type updateRoleResponseBody struct {
 }
 
 type loginResponseBody struct {
-	AccessToken string `json:"access_token"`
-	TokenType   string `json:"token_type"`
-	ExpiresIn   int64  `json:"expires_in"`
+	AccessToken string `json:"accessToken"`
+	TokenType   string `json:"tokenType"`
+	ExpiresIn   int64  `json:"expiresIn"`
 }
 
 type verifyResponseBody struct {
