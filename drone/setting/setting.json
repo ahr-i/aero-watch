@@ -1,18 +1,18 @@
 {
-    "server_port": "40002",
+    "serverPort": "40002",
     "db": {
         "type": "mysql",
         "host": "localhost",
         "port": "3306",
         "name": "aerowatch",
-        "user_env": "DRONE_DB_USER",
-        "password_env": "DRONE_DB_PASSWORD"
+        "userEnv": "DRONE_DB_USER",
+        "passwordEnv": "DRONE_DB_PASSWORD"
     },
-    "drone_table": {
+    "droneTable": {
         "name": "drone_models",
-        "group_column": "model_group",
-        "code_column": "code",
-        "status_column": "status"
+        "groupColumn": "model_group",
+        "codeColumn": "code",
+        "statusColumn": "status"
     },
     "status": {
         "active": "active",
