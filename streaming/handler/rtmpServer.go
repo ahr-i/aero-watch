@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	stderrors "errors"
 	"fmt"
 	"io"
 	"net"
@@ -18,7 +19,7 @@ import (
 
 	"github.com/ahr-i/aero-watch/streaming/setting"
 	"github.com/ahr-i/aero-watch/streaming/utils/logging"
-	"github.com/pkg/errors"
+	pkgerrors "github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/yutopp/go-flv"
 	flvtag "github.com/yutopp/go-flv/tag"
@@ -66,7 +67,7 @@ func StartRTMPServer() {
 				ControlState: rtmp.StreamControlStateConfig{
 					DefaultBandwidthWindowSize: 6 * 1024 * 1024 / 8,
 				},
-				Logger: logrus.StandardLogger(),
+				Logger: newRTMPLogger(),
 			}
 		},
 	})
@@ -80,11 +81,13 @@ func StartRTMPServer() {
 func (h *rtmpStreamHandler) OnPublish(_ *rtmp.StreamContext, timestamp uint32, cmd *rtmpmsg.NetStreamPublish) error {
 	group, code, ok := splitStreamKey(cmd.PublishingName)
 	if !ok || !isValidStreamPart(group) || !isValidStreamPart(code) {
-		return errors.New("invalid stream key")
+		logging.Warn("RTMP publish rejected. invalid stream key: " + cmd.PublishingName)
+		return stderrors.New("invalid stream key")
 	}
 
 	if !validateDrone(group, code) {
-		return errors.New("invalid drone")
+		logging.Warn("RTMP publish rejected. unauthorized drone: " + streamKey(group, code))
+		return stderrors.New("unauthorized drone")
 	}
 
 	if err := h.startHLSWriter(group, code); err != nil {
@@ -199,7 +202,7 @@ func (h *rtmpStreamHandler) OnClose() {
 func (h *rtmpStreamHandler) startHLSWriter(group string, code string) error {
 	streamDir := filepath.Join(setting.Setting.HLSRoot, streamKey(group, code))
 	if err := os.MkdirAll(streamDir, 0755); err != nil {
-		return errors.Wrap(err, "failed to create hls directory")
+		return pkgerrors.Wrap(err, "failed to create hls directory")
 	}
 
 	ffmpegPath := setting.Setting.FFmpegPath
@@ -235,19 +238,19 @@ func (h *rtmpStreamHandler) startHLSWriter(group string, code string) error {
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return errors.Wrap(err, "failed to open ffmpeg stdin")
+		return pkgerrors.Wrap(err, "failed to open ffmpeg stdin")
 	}
 
 	if err := cmd.Start(); err != nil {
 		_ = stdin.Close()
-		return errors.Wrap(err, "failed to start ffmpeg")
+		return pkgerrors.Wrap(err, "failed to start ffmpeg")
 	}
 
 	encoder, err := flv.NewEncoder(stdin, flv.FlagsAudio|flv.FlagsVideo)
 	if err != nil {
 		_ = stdin.Close()
 		_ = cmd.Process.Kill()
-		return errors.Wrap(err, "failed to create flv encoder")
+		return pkgerrors.Wrap(err, "failed to create flv encoder")
 	}
 
 	h.mu.Lock()
@@ -293,4 +296,11 @@ func validateDrone(group string, code string) bool {
 	defer resp.Body.Close()
 
 	return resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices
+}
+
+func newRTMPLogger() *logrus.Logger {
+	logger := logrus.New()
+	logger.SetOutput(io.Discard)
+	logger.SetLevel(logrus.PanicLevel)
+	return logger
 }
