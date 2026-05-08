@@ -10,7 +10,7 @@ type Position struct {
 	Code      string    `json:"code"`
 	Latitude  float64   `json:"latitude"`
 	Longitude float64   `json:"longitude"`
-	UpdatedAt time.Time `json:"updated_at"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type Store struct {
