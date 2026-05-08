@@ -1,13 +1,13 @@
 {
-    "server_port": "40003",
-    "server_read_header_timeout_sec": 5,
-    "server_read_timeout_sec": 10,
-    "server_write_timeout_sec": 10,
-    "server_idle_timeout_sec": 60,
-    "gps_alive_timeout_sec": 10,
-    "gps_cleanup_interval_sec": 1,
-    "drone_service": "http://localhost:40002",
-    "drone_validate_path": "/internal/drone/validate",
-    "drone_validate_enabled": true,
-    "drone_validate_timeout_sec": 5
+    "serverPort": "40003",
+    "serverReadHeaderTimeoutSec": 5,
+    "serverReadTimeoutSec": 10,
+    "serverWriteTimeoutSec": 10,
+    "serverIdleTimeoutSec": 60,
+    "gpsAliveTimeoutSec": 10,
+    "gpsCleanupIntervalSec": 1,
+    "droneService": "http://localhost:40002",
+    "droneValidatePath": "/internal/drone/validate",
+    "droneValidateEnabled": true,
+    "droneValidateTimeoutSec": 5
 }
