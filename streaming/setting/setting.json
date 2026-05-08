@@ -1,13 +1,13 @@
 {
-    "server_port": "40004",
-    "rtmp_port": "1935",
-    "hls_root": "./hls",
-    "capture_root": "./captures",
-    "hls_time_seconds": 1,
-    "hls_list_size": 4,
-    "stream_timeout_seconds": 10,
-    "drone_service": "http://localhost:40002",
-    "drone_validate_path": "/internal/drone/validate",
-    "drone_validate_enabled": true,
-    "ffmpeg_path": "ffmpeg"
+    "serverPort": "40004",
+    "rtmpPort": "1935",
+    "hlsRoot": "./hls",
+    "captureRoot": "./captures",
+    "hlsTimeSeconds": 1,
+    "hlsListSize": 4,
+    "streamTimeoutSeconds": 10,
+    "droneService": "http://localhost:40002",
+    "droneValidatePath": "/internal/drone/validate",
+    "droneValidateEnabled": true,
+    "ffmpegPath": "ffmpeg"
 }
