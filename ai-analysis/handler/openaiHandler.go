@@ -86,7 +86,7 @@ func (h *Handler) questionWithImageHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	if image == "" {
-		rend.JSON(w, http.StatusBadRequest, errorResponseBody{Error: "image_base64 is required"})
+		rend.JSON(w, http.StatusBadRequest, errorResponseBody{Error: "imageBase64 is required"})
 		return
 	}
 
@@ -218,7 +218,7 @@ func makeImageDataURL(imageBase64, mimeType string) (string, error) {
 	}
 
 	if _, err := base64.StdEncoding.DecodeString(imageBase64); err != nil {
-		return "", errors.New("image_base64 must be a valid base64 string")
+		return "", errors.New("imageBase64 must be a valid base64 string")
 	}
 
 	mimeType = strings.TrimSpace(mimeType)

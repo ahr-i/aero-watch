@@ -18,7 +18,7 @@ type requestBody struct {
 
 type imageRequestBody struct {
 	Prompt      string `json:"prompt"`
-	ImageBase64 string `json:"image_base64"`
+	ImageBase64 string `json:"imageBase64"`
 	ImageType   string `json:"imageType,omitempty"`
 }
 
