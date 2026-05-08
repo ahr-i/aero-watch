@@ -31,7 +31,7 @@ type okayResponseBody struct {
 
 type droneStatusResponseBody struct {
 	Status      string `json:"status"`
-	DroneStatus string `json:"drone_status"`
+	DroneStatus string `json:"droneStatus"`
 }
 
 type errorResponseBody struct {
