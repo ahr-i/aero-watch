@@ -76,7 +76,7 @@ func (h *Handler) streamStatusHandler(w http.ResponseWriter, r *http.Request) {
 		Group:     group,
 		Code:      code,
 		Status:    status,
-		RTMPPath:  "/live/" + streamKey(group, code),
+		RTMPPath:  "/live/" + group + "/" + code,
 		HLSURL:    hlsURL(group, code),
 		StartedAt: startedAt,
 	})
@@ -121,7 +121,7 @@ func (h *Handler) adminStreamPlayerHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func hlsURL(group string, code string) string {
-	return "/hls/" + streamKey(group, code) + "/index.m3u8"
+	return "/hls/" + url.PathEscape(group) + "/" + url.PathEscape(code) + "/index.m3u8"
 }
 
 func isValidStreamPart(value string) bool {

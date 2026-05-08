@@ -37,9 +37,17 @@ func streamKey(group string, code string) string {
 	return group + "-" + code
 }
 
-func splitStreamKey(key string) (string, string, bool) {
-	group, code, ok := strings.Cut(key, "-")
+func splitStreamPath(value string) (string, string, bool) {
+	group, code, ok := strings.Cut(value, "/")
 	return group, code, ok && group != "" && code != ""
+}
+
+func hlsStreamDir(group string, code string) string {
+	return filepath.Join(setting.Setting.HLSRoot, group, code)
+}
+
+func hlsIndexPath(group string, code string) string {
+	return filepath.Join(hlsStreamDir(group, code), "index.m3u8")
 }
 
 func markStreamLive(group string, code string) streamInfo {
@@ -127,7 +135,7 @@ func findStream(list []streamInfo, group string, code string) (streamInfo, bool)
 }
 
 func streamFromHLS(group string, code string) (streamInfo, bool) {
-	indexPath := filepath.Join(setting.Setting.HLSRoot, streamKey(group, code), "index.m3u8")
+	indexPath := hlsIndexPath(group, code)
 	fileInfo, err := os.Stat(indexPath)
 	if err != nil || fileInfo.IsDir() {
 		return streamInfo{}, false
@@ -149,7 +157,7 @@ func pruneStaleStreams() {
 	defer streams.Unlock()
 
 	for key, info := range streams.items {
-		indexPath := filepath.Join(setting.Setting.HLSRoot, key, "index.m3u8")
+		indexPath := hlsIndexPath(info.Group, info.Code)
 		fileInfo, err := os.Stat(indexPath)
 		if err == nil && !fileInfo.IsDir() {
 			lastSeenAt := fileInfo.ModTime().UTC()
@@ -179,32 +187,38 @@ func streamTimeout() time.Duration {
 }
 
 func streamsFromHLS() []streamInfo {
-	entries, err := os.ReadDir(setting.Setting.HLSRoot)
+	groupEntries, err := os.ReadDir(setting.Setting.HLSRoot)
 	if err != nil {
 		return nil
 	}
 
-	list := make([]streamInfo, 0, len(entries))
-	for _, entry := range entries {
-		if !entry.IsDir() {
+	list := make([]streamInfo, 0, len(groupEntries))
+	for _, groupEntry := range groupEntries {
+		if !groupEntry.IsDir() || !isValidStreamPart(groupEntry.Name()) {
 			continue
 		}
 
-		group, code, ok := splitStreamKey(entry.Name())
-		if !ok {
+		codeEntries, err := os.ReadDir(filepath.Join(setting.Setting.HLSRoot, groupEntry.Name()))
+		if err != nil {
 			continue
 		}
 
-		info, exists := streamFromHLS(group, code)
-		if exists {
-			list = append(list, info)
-			continue
-		}
+		for _, codeEntry := range codeEntries {
+			if !codeEntry.IsDir() || !isValidStreamPart(codeEntry.Name()) {
+				continue
+			}
 
-		indexPath := filepath.Join(setting.Setting.HLSRoot, entry.Name(), "index.m3u8")
-		fileInfo, err := os.Stat(indexPath)
-		if err == nil && !fileInfo.IsDir() && isStale(fileInfo.ModTime().UTC()) {
-			removeHLSDirectory(entry.Name())
+			info, exists := streamFromHLS(groupEntry.Name(), codeEntry.Name())
+			if exists {
+				list = append(list, info)
+				continue
+			}
+
+			indexPath := hlsIndexPath(groupEntry.Name(), codeEntry.Name())
+			fileInfo, err := os.Stat(indexPath)
+			if err == nil && !fileInfo.IsDir() && isStale(fileInfo.ModTime().UTC()) {
+				removeHLSDirectory(streamKey(groupEntry.Name(), codeEntry.Name()))
+			}
 		}
 	}
 
@@ -212,11 +226,12 @@ func streamsFromHLS() []streamInfo {
 }
 
 func removeHLSDirectory(key string) {
-	if key == "" || strings.Contains(key, "..") || strings.ContainsAny(key, `/\`) {
+	group, code, ok := strings.Cut(key, "-")
+	if !ok || !isValidStreamPart(group) || !isValidStreamPart(code) {
 		return
 	}
 
-	dir := filepath.Join(setting.Setting.HLSRoot, key)
+	dir := hlsStreamDir(group, code)
 	err := os.RemoveAll(dir)
 	if err != nil {
 		logging.Error(err)

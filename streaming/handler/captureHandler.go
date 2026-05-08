@@ -57,7 +57,7 @@ func (h *Handler) captureStreamHandler(w http.ResponseWriter, r *http.Request) {
 
 func captureStreamFrame(group string, code string, capturedAt time.Time) (string, error) {
 	key := streamKey(group, code)
-	streamDir := filepath.Join(setting.Setting.HLSRoot, key)
+	streamDir := hlsStreamDir(group, code)
 	segmentPath, err := latestHLSSegmentPath(streamDir)
 	if err != nil {
 		return "", err

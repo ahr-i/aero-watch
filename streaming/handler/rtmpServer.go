@@ -32,6 +32,7 @@ var _ rtmp.Handler = (*rtmpStreamHandler)(nil)
 type rtmpStreamHandler struct {
 	rtmp.DefaultHandler
 
+	app   string
 	group string
 	code  string
 
@@ -78,11 +79,16 @@ func StartRTMPServer() {
 	}
 }
 
+func (h *rtmpStreamHandler) OnConnect(_ uint32, cmd *rtmpmsg.NetConnectionConnect) error {
+	h.app = strings.Trim(cmd.Command.App, "/")
+	return nil
+}
+
 func (h *rtmpStreamHandler) OnPublish(_ *rtmp.StreamContext, timestamp uint32, cmd *rtmpmsg.NetStreamPublish) error {
-	group, code, ok := splitStreamKey(cmd.PublishingName)
+	group, code, ok := parseRTMPPublishPath(h.app, cmd.PublishingName)
 	if !ok || !isValidStreamPart(group) || !isValidStreamPart(code) {
-		logging.Warn("RTMP publish rejected. invalid stream key: " + cmd.PublishingName)
-		return stderrors.New("invalid stream key")
+		logging.Warn("RTMP publish rejected. expected path: /live/{group}/{code}, received path: " + rtmpPublishPath(h.app, cmd.PublishingName))
+		return stderrors.New("invalid stream path")
 	}
 
 	if !validateDrone(group, code) {
@@ -100,6 +106,34 @@ func (h *rtmpStreamHandler) OnPublish(_ *rtmp.StreamContext, timestamp uint32, c
 
 	logging.Info("RTMP publish accepted: " + streamKey(group, code))
 	return nil
+}
+
+func rtmpPublishPath(app string, publishingName string) string {
+	app = strings.Trim(app, "/")
+	publishingName = strings.Trim(publishingName, "/")
+	if publishingName == "" {
+		return "/" + app
+	}
+
+	return "/" + app + "/" + publishingName
+}
+
+func parseRTMPPublishPath(app string, publishingName string) (string, string, bool) {
+	appParts := strings.Split(strings.Trim(app, "/"), "/")
+	if len(appParts) == 0 || appParts[0] != "live" {
+		return "", "", false
+	}
+
+	publishingName = strings.Trim(publishingName, "/")
+	if len(appParts) == 1 {
+		return splitStreamPath(publishingName)
+	}
+
+	if len(appParts) == 2 && !strings.Contains(publishingName, "/") {
+		return appParts[1], publishingName, true
+	}
+
+	return "", "", false
 }
 
 func (h *rtmpStreamHandler) OnSetDataFrame(timestamp uint32, data *rtmpmsg.NetStreamSetDataFrame) error {
@@ -200,7 +234,7 @@ func (h *rtmpStreamHandler) OnClose() {
 }
 
 func (h *rtmpStreamHandler) startHLSWriter(group string, code string) error {
-	streamDir := filepath.Join(setting.Setting.HLSRoot, streamKey(group, code))
+	streamDir := hlsStreamDir(group, code)
 	if err := os.MkdirAll(streamDir, 0755); err != nil {
 		return pkgerrors.Wrap(err, "failed to create hls directory")
 	}
