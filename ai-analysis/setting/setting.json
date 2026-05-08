@@ -1,13 +1,13 @@
 {
-    "server_port": "40006",
+    "serverPort": "40006",
     "openai": {
-        "api_url": "https://api.openai.com/v1/responses",
+        "apiUrl": "https://api.openai.com/v1/responses",
         "model": "gpt-4.1-mini",
-        "timeout_seconds": 60,
-        "api_key_env": "OPENAI_API_KEY",
-        "text_pre_prompt_env": "OPENAI_TEXT_PRE_PROMPT",
-        "text_post_prompt_env": "OPENAI_TEXT_POST_PROMPT",
-        "image_pre_prompt_env": "OPENAI_IMAGE_PRE_PROMPT",
-        "image_post_prompt_env": "OPENAI_IMAGE_POST_PROMPT"
+        "timeoutSeconds": 60,
+        "apiKeyEnv": "OPENAI_API_KEY",
+        "textPrePromptEnv": "OPENAI_TEXT_PRE_PROMPT",
+        "textPostPromptEnv": "OPENAI_TEXT_POST_PROMPT",
+        "imagePrePromptEnv": "OPENAI_IMAGE_PRE_PROMPT",
+        "imagePostPromptEnv": "OPENAI_IMAGE_POST_PROMPT"
     }
 }

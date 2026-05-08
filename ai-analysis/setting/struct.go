@@ -3,19 +3,19 @@ package setting
 var Setting settingStruct
 
 type settingStruct struct {
-	ServerPort string       `json:"server_port"`
+	ServerPort string       `json:"serverPort"`
 	OpenAI     openAIStruct `json:"openai"`
 }
 
 type openAIStruct struct {
-	APIURL           string `json:"api_url"`
+	APIURL           string `json:"apiUrl"`
 	Model            string `json:"model"`
-	TimeoutSeconds   int    `json:"timeout_seconds"`
-	APIKeyEnv        string `json:"api_key_env"`
-	TextPrePromptEnv string `json:"text_pre_prompt_env"`
-	TextPostPromptEnv string `json:"text_post_prompt_env"`
-	ImagePrePromptEnv string `json:"image_pre_prompt_env"`
-	ImagePostPromptEnv string `json:"image_post_prompt_env"`
+	TimeoutSeconds   int    `json:"timeoutSeconds"`
+	APIKeyEnv        string `json:"apiKeyEnv"`
+	TextPrePromptEnv string `json:"textPrePromptEnv"`
+	TextPostPromptEnv string `json:"textPostPromptEnv"`
+	ImagePrePromptEnv string `json:"imagePrePromptEnv"`
+	ImagePostPromptEnv string `json:"imagePostPromptEnv"`
 	APIKey           string `json:"-"`
 	TextPrePrompt    string `json:"-"`
 	TextPostPrompt   string `json:"-"`
