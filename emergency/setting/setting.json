@@ -1,0 +1,27 @@
+{
+    "serverPort": "40005",
+    "csvPath": "./csv",
+    "dataFilePattern": "^([A-Za-z][A-Za-z0-9]*)/([0-9]{6}|[0-9]{8})\\.csv$",
+    "tablePrefix": "emergency",
+    "nearestEmergencyLimit": 3,
+    "db": {
+        "hostEnv": "EMERGENCY_DB_HOST",
+        "portEnv": "EMERGENCY_DB_PORT",
+        "userEnv": "EMERGENCY_DB_USER",
+        "passwordEnv": "EMERGENCY_DB_PASSWORD",
+        "schemaEnv": "EMERGENCY_DB_SCHEMA"
+    },
+    "csvSchema": {
+        "emergency": [
+            "id",
+            "station_name",
+            "adress",
+            "headquarters_name",
+            "phone_number",
+            "latitude",
+            "longitude",
+            "station_type",
+            "created_at"
+        ]
+    }
+}
