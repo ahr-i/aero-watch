@@ -187,15 +187,19 @@ func (c *MySQLController) GetTable(tableName string) (*TableData, error) {
 	}
 	defer rows.Close()
 
-	columns, err := rows.Columns()
+	rawColumns, err := rows.Columns()
 	if err != nil {
 		return nil, err
+	}
+	columns := make([]string, len(rawColumns))
+	for i, column := range rawColumns {
+		columns[i] = snakeToCamel(column)
 	}
 
 	data := make([]map[string]string, 0)
 	for rows.Next() {
-		values := make([]sql.NullString, len(columns))
-		scanValues := make([]any, len(columns))
+		values := make([]sql.NullString, len(rawColumns))
+		scanValues := make([]any, len(rawColumns))
 		for i := range values {
 			scanValues[i] = &values[i]
 		}
@@ -204,12 +208,12 @@ func (c *MySQLController) GetTable(tableName string) (*TableData, error) {
 			return nil, err
 		}
 
-		row := make(map[string]string, len(columns))
-		for i, column := range columns {
+		row := make(map[string]string, len(rawColumns))
+		for i, column := range rawColumns {
 			if values[i].Valid {
-				row[column] = values[i].String
+				row[snakeToCamel(column)] = values[i].String
 			} else {
-				row[column] = ""
+				row[snakeToCamel(column)] = ""
 			}
 		}
 		data = append(data, row)
@@ -281,6 +285,27 @@ func distanceMeter(latitude1 float64, longitude1 float64, latitude2 float64, lon
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 
 	return earthRadiusMeter * c
+}
+
+func snakeToCamel(value string) string {
+	parts := strings.Split(value, "_")
+	if len(parts) == 1 {
+		return value
+	}
+
+	builder := strings.Builder{}
+	builder.WriteString(parts[0])
+	for _, part := range parts[1:] {
+		if part == "" {
+			continue
+		}
+		builder.WriteString(strings.ToUpper(part[:1]))
+		if len(part) > 1 {
+			builder.WriteString(part[1:])
+		}
+	}
+
+	return builder.String()
 }
 
 func validateTableName(tableName string) error {
