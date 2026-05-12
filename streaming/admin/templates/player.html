@@ -60,8 +60,8 @@
 			if (window.Hls && Hls.isSupported()) {
 				hls = new Hls({
 					liveDurationInfinity: true,
-					liveSyncDurationCount: 1,
-					liveMaxLatencyDurationCount: 3
+					liveSyncDurationCount: 3,
+					liveMaxLatencyDurationCount: 6
 				});
 				hls.loadSource(hlsUrl);
 				hls.attachMedia(video);

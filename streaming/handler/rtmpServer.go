@@ -259,6 +259,8 @@ func (h *rtmpStreamHandler) startHLSWriter(group string, code string) error {
 		ffmpegPath,
 		"-hide_banner",
 		"-loglevel", "error",
+		"-fflags", "+genpts",
+		"-use_wallclock_as_timestamps", "1",
 		"-f", "flv",
 		"-i", "pipe:0",
 		"-c", "copy",
