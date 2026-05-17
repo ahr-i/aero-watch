@@ -1,6 +1,6 @@
 {
     "serverPort": "40004",
-    "rtmpPort": "1935",
+    "rtmpPort": "41935",
     "hlsRoot": "./hls",
     "captureRoot": "./captures",
     "hlsTimeSeconds": 2,
