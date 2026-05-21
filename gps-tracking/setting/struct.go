@@ -10,7 +10,7 @@ type settingStruct struct {
 	ServerIdleTimeoutSec       int    `json:"serverIdleTimeoutSec"`
 	GPSAliveTimeoutSec         int    `json:"gpsAliveTimeoutSec"`
 	GPSCleanupIntervalSec      int    `json:"gpsCleanupIntervalSec"`
-	DroneService               string `json:"droneService"`
+	DroneOperationService      string `json:"droneOperationService"`
 	DroneValidatePath          string `json:"droneValidatePath"`
 	DroneValidateEnabled       bool   `json:"droneValidateEnabled"`
 	DroneValidateTimeoutSec    int    `json:"droneValidateTimeoutSec"`

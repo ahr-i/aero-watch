@@ -84,11 +84,11 @@ func validateDrone(group string, code string) bool {
 		return true
 	}
 
-	if setting.Setting.DroneService == "" || setting.Setting.DroneValidatePath == "" {
+	if setting.Setting.DroneOperationService == "" || setting.Setting.DroneValidatePath == "" {
 		return false
 	}
 
-	validateURL, err := url.Parse(strings.TrimRight(setting.Setting.DroneService, "/"))
+	validateURL, err := url.Parse(strings.TrimRight(setting.Setting.DroneOperationService, "/"))
 	if err != nil {
 		logging.Error(fmt.Sprintf("drone validation url parse failed: %v", err))
 		return false
