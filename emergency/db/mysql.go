@@ -151,6 +151,21 @@ func (c *MySQLController) DropTable(tableName string) error {
 }
 
 func (c *MySQLController) ListTables() ([]string, error) {
+	fullTableNames, err := c.listFullTables()
+	if err != nil {
+		return nil, err
+	}
+
+	prefix := setting.Setting.TablePrefix + "_"
+	tables := make([]string, 0, len(fullTableNames))
+	for _, tableName := range fullTableNames {
+		tables = append(tables, strings.TrimPrefix(tableName, prefix))
+	}
+
+	return tables, nil
+}
+
+func (c *MySQLController) listFullTables() ([]string, error) {
 	prefix := setting.Setting.TablePrefix + "_"
 	rows, err := c.db.Query(
 		"SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name LIKE ? ORDER BY table_name",
@@ -230,7 +245,7 @@ func (c *MySQLController) FindNearest(latitude float64, longitude float64, limit
 		limit = 1
 	}
 
-	tables, err := c.ListTables()
+	tables, err := c.listFullTables()
 	if err != nil {
 		return nil, err
 	}
