@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/ahr-i/aero-watch/drone/setting"
+	"github.com/ahr-i/aero-watch/drone-operation/setting"
 	"github.com/go-sql-driver/mysql"
 )
 

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ahr-i/aero-watch/drone/setting"
+	"github.com/ahr-i/aero-watch/drone-operation/setting"
 )
 
 var ErrDroneAlreadyExists = errors.New("drone model already exists")

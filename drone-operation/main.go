@@ -3,10 +3,10 @@ package main
 import (
 	"net/http"
 
-	"github.com/ahr-i/aero-watch/drone/handler"
-	"github.com/ahr-i/aero-watch/drone/setting"
-	"github.com/ahr-i/aero-watch/drone/utils/corsController"
-	"github.com/ahr-i/aero-watch/drone/utils/logging"
+	"github.com/ahr-i/aero-watch/drone-operation/handler"
+	"github.com/ahr-i/aero-watch/drone-operation/setting"
+	"github.com/ahr-i/aero-watch/drone-operation/utils/corsController"
+	"github.com/ahr-i/aero-watch/drone-operation/utils/logging"
 
 	"github.com/urfave/negroni"
 )

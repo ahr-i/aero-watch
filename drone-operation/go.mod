@@ -1,4 +1,4 @@
-module github.com/ahr-i/aero-watch/drone
+module github.com/ahr-i/aero-watch/drone-operation
 
 go 1.24.0
 

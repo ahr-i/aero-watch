@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/ahr-i/aero-watch/drone/db"
+	"github.com/ahr-i/aero-watch/drone-operation/db"
 	"github.com/unrolled/render"
 )
 

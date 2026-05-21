@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ahr-i/aero-watch/drone/utils/logging"
+	"github.com/ahr-i/aero-watch/drone-operation/utils/logging"
 )
 
 const settingFilePath string = "./setting/setting.json"

@@ -3,8 +3,8 @@ package handler
 import (
 	"os"
 
-	"github.com/ahr-i/aero-watch/drone/db"
-	"github.com/ahr-i/aero-watch/drone/utils/logging"
+	"github.com/ahr-i/aero-watch/drone-operation/db"
+	"github.com/ahr-i/aero-watch/drone-operation/utils/logging"
 	"github.com/gorilla/mux"
 )
 

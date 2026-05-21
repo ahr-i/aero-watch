@@ -6,7 +6,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ahr-i/aero-watch/drone/db"
+	"github.com/ahr-i/aero-watch/drone-operation/db"
 )
 
 func (h *Handler) validateDroneHandler(w http.ResponseWriter, r *http.Request) {
