@@ -3,10 +3,11 @@ package setting
 var Setting settingStruct
 
 type settingStruct struct {
-	ServerPort string           `json:"serverPort"`
-	DB         dbStruct         `json:"db"`
-	DroneTable droneTableStruct `json:"droneTable"`
-	Status     statusStruct     `json:"status"`
+	ServerPort      string                `json:"serverPort"`
+	DB              dbStruct              `json:"db"`
+	DroneTable      droneTableStruct      `json:"droneTable"`
+	DriverInfoTable driverInfoTableStruct `json:"driverInfoTable"`
+	Status          statusStruct          `json:"status"`
 }
 
 type dbStruct struct {
@@ -25,6 +26,12 @@ type droneTableStruct struct {
 	GroupColumn  string `json:"groupColumn"`
 	CodeColumn   string `json:"codeColumn"`
 	StatusColumn string `json:"statusColumn"`
+}
+
+type driverInfoTableStruct struct {
+	Name          string `json:"name"`
+	IDColumn      string `json:"idColumn"`
+	ContentColumn string `json:"contentColumn"`
 }
 
 type statusStruct struct {

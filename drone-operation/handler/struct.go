@@ -25,6 +25,19 @@ type droneStatusRequestBody struct {
 	Status string `json:"status"`
 }
 
+type driverInfoRequestBody struct {
+	Content string `json:"content"`
+}
+
+type updateDriverInfoRequestBody struct {
+	ID      int64  `json:"id"`
+	Content string `json:"content"`
+}
+
+type deleteDriverInfoRequestBody struct {
+	ID int64 `json:"id"`
+}
+
 type okayResponseBody struct {
 	Status string `json:"status"`
 }
@@ -32,6 +45,15 @@ type okayResponseBody struct {
 type droneStatusResponseBody struct {
 	Status      string `json:"status"`
 	DroneStatus string `json:"droneStatus"`
+}
+
+type driverInfoResponseBody struct {
+	ID      int64  `json:"id"`
+	Content string `json:"content"`
+}
+
+type listDriverInfoResponseBody struct {
+	Infos []driverInfoResponseBody `json:"infos"`
 }
 
 type errorResponseBody struct {

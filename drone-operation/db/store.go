@@ -15,7 +15,16 @@ type Store interface {
 	RegisterDroneModel(group string, code string) error
 	ValidateDroneModel(group string, code string) error
 	UpdateDroneStatus(group string, code string, status string) error
+	CreateDriverInfo(content string) (DriverInfo, error)
+	ListDriverInfos() ([]DriverInfo, error)
+	UpdateDriverInfo(id int64, content string) error
+	DeleteDriverInfo(id int64) error
 	Close() error
+}
+
+type DriverInfo struct {
+	ID      int64
+	Content string
 }
 
 func NewStore() (Store, error) {

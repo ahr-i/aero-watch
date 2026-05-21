@@ -31,6 +31,10 @@ func CreateHandler() *Handler {
 	mux.HandleFunc("/internal/drone/validate", handler.validateDroneHandler).Methods("POST")
 	mux.HandleFunc("/internal/drone", handler.registerDroneHandler).Methods("POST")
 	mux.HandleFunc("/internal/drone/status", handler.updateDroneStatusHandler).Methods("PUT")
+	mux.HandleFunc("/internal/driver", handler.createDriverInfoHandler).Methods("POST")
+	mux.HandleFunc("/internal/driver", handler.listDriverInfoHandler).Methods("GET")
+	mux.HandleFunc("/internal/driver", handler.updateDriverInfoHandler).Methods("PUT")
+	mux.HandleFunc("/internal/driver", handler.deleteDriverInfoHandler).Methods("DELETE")
 
 	return handler
 }

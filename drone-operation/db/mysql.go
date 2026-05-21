@@ -38,7 +38,11 @@ func (s *MySQLStore) Init() error {
 	}
 
 	s.db = db
-	return s.createDroneTable()
+	if err := s.createDroneTable(); err != nil {
+		return err
+	}
+
+	return s.createDriverInfoTable()
 }
 
 func (s *MySQLStore) RegisterDroneModel(group string, code string) error {
@@ -114,6 +118,85 @@ func (s *MySQLStore) UpdateDroneStatus(group string, code string, status string)
 	return nil
 }
 
+func (s *MySQLStore) CreateDriverInfo(content string) (DriverInfo, error) {
+	table, _, contentColumn, err := driverInfoTableIdentifiers()
+	if err != nil {
+		return DriverInfo{}, err
+	}
+
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (?)", table, contentColumn)
+	result, err := s.db.Exec(query, content)
+	if err != nil {
+		return DriverInfo{}, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return DriverInfo{}, err
+	}
+
+	return DriverInfo{
+		ID:      id,
+		Content: content,
+	}, nil
+}
+
+func (s *MySQLStore) ListDriverInfos() ([]DriverInfo, error) {
+	table, idColumn, contentColumn, err := driverInfoTableIdentifiers()
+	if err != nil {
+		return nil, err
+	}
+
+	query := fmt.Sprintf("SELECT %s, %s FROM %s ORDER BY %s ASC", idColumn, contentColumn, table, idColumn)
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	infos := []DriverInfo{}
+	for rows.Next() {
+		var info DriverInfo
+		if err := rows.Scan(&info.ID, &info.Content); err != nil {
+			return nil, err
+		}
+
+		infos = append(infos, info)
+	}
+
+	return infos, rows.Err()
+}
+
+func (s *MySQLStore) UpdateDriverInfo(id int64, content string) error {
+	table, idColumn, contentColumn, err := driverInfoTableIdentifiers()
+	if err != nil {
+		return err
+	}
+
+	query := fmt.Sprintf("UPDATE %s SET %s = ? WHERE %s = ?", table, contentColumn, idColumn)
+	result, err := s.db.Exec(query, content, id)
+	if err != nil {
+		return err
+	}
+
+	return noRowsErrorIfNotAffected(result)
+}
+
+func (s *MySQLStore) DeleteDriverInfo(id int64) error {
+	table, idColumn, _, err := driverInfoTableIdentifiers()
+	if err != nil {
+		return err
+	}
+
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ?", table, idColumn)
+	result, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	return noRowsErrorIfNotAffected(result)
+}
+
 func (s *MySQLStore) Close() error {
 	if s.db == nil {
 		return nil
@@ -141,6 +224,23 @@ func (s *MySQLStore) createDroneTable() error {
 	return err
 }
 
+func (s *MySQLStore) createDriverInfoTable() error {
+	table, idColumn, contentColumn, err := driverInfoTableIdentifiers()
+	if err != nil {
+		return err
+	}
+
+	query := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
+		%s BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		%s TEXT NOT NULL,
+		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`, table, idColumn, contentColumn)
+
+	_, err = s.db.Exec(query)
+	return err
+}
+
 func droneTableIdentifiers() (string, string, string, string, error) {
 	table, err := sqlIdentifier(setting.Setting.DroneTable.Name)
 	if err != nil {
@@ -163,6 +263,38 @@ func droneTableIdentifiers() (string, string, string, string, error) {
 	}
 
 	return table, groupColumn, codeColumn, statusColumn, nil
+}
+
+func driverInfoTableIdentifiers() (string, string, string, error) {
+	table, err := sqlIdentifier(setting.Setting.DriverInfoTable.Name)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	idColumn, err := sqlIdentifier(setting.Setting.DriverInfoTable.IDColumn)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	contentColumn, err := sqlIdentifier(setting.Setting.DriverInfoTable.ContentColumn)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	return table, idColumn, contentColumn, nil
+}
+
+func noRowsErrorIfNotAffected(result sql.Result) error {
+	affectedRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affectedRows == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
 }
 
 func isDuplicateDroneError(err error) bool {
