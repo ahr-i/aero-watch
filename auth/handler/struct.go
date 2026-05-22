@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/ahr-i/aero-watch/auth/db"
 	"github.com/golang-jwt/jwt/v5"
@@ -38,6 +39,16 @@ type updateRoleRequestBody struct {
 type updateRoleResponseBody struct {
 	User string `json:"user"`
 	Role string `json:"role"`
+}
+
+type listUsersResponseBody struct {
+	Users []userResponseBody `json:"users"`
+}
+
+type userResponseBody struct {
+	User      string    `json:"user"`
+	Role      string    `json:"role"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type loginResponseBody struct {

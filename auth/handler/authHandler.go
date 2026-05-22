@@ -91,6 +91,25 @@ func (h *Handler) loginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *Handler) listUsersHandler(w http.ResponseWriter, r *http.Request) {
+	users, err := h.store.ListUsers()
+	if err != nil {
+		rend.JSON(w, http.StatusInternalServerError, errorResponseBody{Error: "failed to list users"})
+		return
+	}
+
+	responseUsers := make([]userResponseBody, 0, len(users))
+	for _, user := range users {
+		responseUsers = append(responseUsers, userResponseBody{
+			User:      user.User,
+			Role:      user.Role,
+			CreatedAt: user.CreatedAt,
+		})
+	}
+
+	rend.JSON(w, http.StatusOK, listUsersResponseBody{Users: responseUsers})
+}
+
 func (h *Handler) verifyHandler(w http.ResponseWriter, r *http.Request) {
 	claims, err := parseAccessToken(r)
 	if err != nil {

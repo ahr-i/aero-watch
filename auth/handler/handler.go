@@ -31,6 +31,7 @@ func CreateHandler() *Handler {
 
 	mux.HandleFunc("/signup", handler.signupHandler).Methods("POST")
 	mux.HandleFunc("/login", handler.loginHandler).Methods("POST")
+	mux.HandleFunc("/users", handler.listUsersHandler).Methods("GET")
 
 	mux.HandleFunc("/verify", handler.verifyHandler).Methods("GET")
 	mux.HandleFunc("/role", handler.roleHandler).Methods("GET")

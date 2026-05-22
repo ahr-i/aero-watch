@@ -46,4 +46,5 @@ type userTableStruct struct {
 	UsernameColumn     string `json:"usernameColumn"`
 	PasswordHashColumn string `json:"passwordHashColumn"`
 	RoleColumn         string `json:"roleColumn"`
+	CreatedAtColumn    string `json:"createdAtColumn"`
 }

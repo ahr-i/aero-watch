@@ -25,6 +25,7 @@
         "name": "users",
         "usernameColumn": "username",
         "passwordHashColumn": "password_hash",
-        "roleColumn": "role"
+        "roleColumn": "role",
+        "createdAtColumn": "created_at"
     }
 }

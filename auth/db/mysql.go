@@ -119,6 +119,58 @@ func (s *MySQLStore) FindUserAuthInfo(user string) (UserAuthInfo, error) {
 	return userInfo, nil
 }
 
+func (s *MySQLStore) ListUsers() ([]UserInfo, error) {
+	table, err := sqlIdentifier(setting.Setting.UserTable.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	usernameColumn, err := sqlIdentifier(setting.Setting.UserTable.UsernameColumn)
+	if err != nil {
+		return nil, err
+	}
+
+	roleColumn, err := sqlIdentifier(setting.Setting.UserTable.RoleColumn)
+	if err != nil {
+		return nil, err
+	}
+
+	createdAtColumn, err := sqlIdentifier(setting.Setting.UserTable.CreatedAtColumn)
+	if err != nil {
+		return nil, err
+	}
+
+	query := fmt.Sprintf("SELECT %s, %s, %s FROM %s ORDER BY %s DESC",
+		usernameColumn,
+		roleColumn,
+		createdAtColumn,
+		table,
+		createdAtColumn,
+	)
+
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []UserInfo{}
+	for rows.Next() {
+		var user UserInfo
+		if err := rows.Scan(&user.User, &user.Role, &user.CreatedAt); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func (s *MySQLStore) UpdateUserRole(user string, role string) error {
 	table, err := sqlIdentifier(setting.Setting.UserTable.Name)
 	if err != nil {
@@ -182,12 +234,17 @@ func (s *MySQLStore) createUserTable() error {
 		return err
 	}
 
+	createdAtColumn, err := sqlIdentifier(setting.Setting.UserTable.CreatedAtColumn)
+	if err != nil {
+		return err
+	}
+
 	query := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
 		%s VARCHAR(255) NOT NULL PRIMARY KEY,
 		%s VARCHAR(255) NOT NULL,
 		%s VARCHAR(50) NOT NULL,
-		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`, table, usernameColumn, passwordHashColumn, roleColumn)
+		%s TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`, table, usernameColumn, passwordHashColumn, roleColumn, createdAtColumn)
 
 	_, err = s.db.Exec(query)
 	return err

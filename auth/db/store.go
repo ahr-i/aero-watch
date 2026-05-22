@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/ahr-i/aero-watch/auth/setting"
 )
@@ -13,6 +14,7 @@ type Store interface {
 	Init() error
 	CreateUser(user string, passwordHash string, role string) error
 	FindUserAuthInfo(user string) (UserAuthInfo, error)
+	ListUsers() ([]UserInfo, error)
 	UpdateUserRole(user string, role string) error
 	Close() error
 }
@@ -20,6 +22,12 @@ type Store interface {
 type UserAuthInfo struct {
 	PasswordHash string
 	Role         string
+}
+
+type UserInfo struct {
+	User      string
+	Role      string
+	CreatedAt time.Time
 }
 
 func NewStore() (Store, error) {
