@@ -54,6 +54,10 @@ func readSettingFile() error {
 func readEnvFile() error {
 	file, err := os.Open(envFilePath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+
 		return err
 	}
 	defer file.Close()
