@@ -2,22 +2,22 @@
     "serverPort": "40008",
     "services": {
         "aiAnalysis": {
-            "baseUrl": "http://aerowatch-ai-analysis:40006"
+            "baseUrl": "http://ai-analysis:40006"
         },
         "auth": {
-            "baseUrl": "http://aerowatch-auth:40001"
+            "baseUrl": "http://auth:40001"
         },
         "droneOperation": {
-            "baseUrl": "http://aerowatch-drone-operation:40002"
+            "baseUrl": "http://drone-operation:40002"
         },
         "emergency": {
-            "baseUrl": "http://aerowatch-emergency:40005"
+            "baseUrl": "http://emergency:40005"
         },
         "gpsTracking": {
-            "baseUrl": "http://aerowatch-gps-tracking:40003"
+            "baseUrl": "http://gps-tracking:40003"
         },
         "streaming": {
-            "baseUrl": "http://aerowatch-streaming:40004"
+            "baseUrl": "http://streaming:40004"
         }
     }
 }

@@ -2,7 +2,7 @@
     "serverPort": "40002",
     "db": {
         "type": "mysql",
-        "host": "aerowatch-db-mysql",
+        "host": "db-mysql",
         "port": "3306",
         "name": "aerowatch",
         "userEnv": "DRONE_DB_USER",

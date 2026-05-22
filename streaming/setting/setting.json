@@ -6,7 +6,7 @@
     "hlsTimeSeconds": 2,
     "hlsListSize": 10,
     "streamTimeoutSeconds": 10,
-    "droneOperationService": "http://localhost:40002",
+    "droneOperationService": "http://drone-operation:40002",
     "droneValidatePath": "/internal/drone/validate",
     "droneValidateEnabled": true,
     "ffmpegPath": "ffmpeg"
