@@ -2,7 +2,7 @@ import glob
 import os
 import shutil
 
-from app.models import MonitorInfo
+from app.models import AppSettings, MonitorInfo
 
 
 def find_ffmpeg(configured_path: str = "") -> str | None:
@@ -32,14 +32,27 @@ def find_ffmpeg(configured_path: str = "") -> str | None:
     return None
 
 
-def build_stream_command(ffmpeg_path: str, monitor: MonitorInfo, url: str) -> list[str]:
+def build_stream_command(
+    ffmpeg_path: str,
+    monitor: MonitorInfo,
+    url: str,
+    settings: AppSettings,
+) -> list[str]:
+    bitrate = f"{settings.video_bitrate_kbps}k"
+    bufsize = f"{settings.video_bitrate_kbps * 2}k"
+    gop = str(settings.stream_fps * 2)
+
     return [
         ffmpeg_path,
         "-y",
+        "-thread_queue_size",
+        "512",
         "-f",
         "gdigrab",
+        "-draw_mouse",
+        "1",
         "-framerate",
-        "30",
+        str(settings.stream_fps),
         "-offset_x",
         str(monitor.x),
         "-offset_y",
@@ -49,20 +62,26 @@ def build_stream_command(ffmpeg_path: str, monitor: MonitorInfo, url: str) -> li
         "-i",
         "desktop",
         "-an",
+        "-vsync",
+        "cfr",
         "-c:v",
         "libx264",
         "-preset",
-        "veryfast",
+        "ultrafast",
+        "-tune",
+        "zerolatency",
         "-pix_fmt",
         "yuv420p",
+        "-bf",
+        "0",
         "-g",
-        "60",
+        gop,
         "-b:v",
-        "6000k",
+        bitrate,
         "-maxrate",
-        "6000k",
+        bitrate,
         "-bufsize",
-        "12000k",
+        bufsize,
         "-f",
         "flv",
         url,

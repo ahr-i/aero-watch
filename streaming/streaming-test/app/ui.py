@@ -421,7 +421,8 @@ class StreamingApp:
             self.selected_monitor.set(labels[0])
 
         self.render_monitor_cards(labels)
-        self.update_previews()
+        self.update_all_previews_once()
+        self.schedule_preview_updates()
 
     def clear_monitor_cards(self) -> None:
         for child in self.monitor_grid.winfo_children():
@@ -538,6 +539,8 @@ class StreamingApp:
     def select_monitor(self, label: str) -> None:
         self.selected_monitor.set(label)
         self.update_monitor_selection_styles()
+        self.update_selected_preview_once()
+        self.schedule_preview_updates()
 
     def update_monitor_selection_styles(self) -> None:
         selected = self.selected_monitor.get()
@@ -556,34 +559,56 @@ class StreamingApp:
                 activeforeground="white" if is_selected else PRIMARY_DARK,
             )
 
-    def update_previews(self) -> None:
+    def update_all_previews_once(self) -> None:
+        for label, monitor in self.monitor_map.items():
+            self.capture_preview(label, monitor)
+
+    def update_selected_preview_once(self) -> None:
+        selected = self.selected_monitor.get()
+        if not selected:
+            return
+
+        monitor = self.monitor_map.get(selected)
+        if not monitor:
+            return
+
+        self.capture_preview(selected, monitor)
+
+    def capture_preview(self, label: str, monitor: MonitorInfo) -> None:
+        widgets = self.monitor_cards.get(label)
+        if not widgets:
+            return
+
+        try:
+            shot = self.sct.grab(
+                {
+                    "left": monitor.x,
+                    "top": monitor.y,
+                    "width": monitor.width,
+                    "height": monitor.height,
+                }
+            )
+            image = Image.frombytes("RGB", shot.size, shot.rgb)
+            image.thumbnail((304, 180))
+            photo = ImageTk.PhotoImage(image)
+            self.preview_images[label] = photo
+            widgets["preview"].configure(image=photo, text="")
+        except Exception as exc:
+            widgets["preview"].configure(text=f"Preview unavailable\n{exc}", image="")
+
+    def schedule_preview_updates(self) -> None:
         if self.preview_job:
             self.root.after_cancel(self.preview_job)
             self.preview_job = None
 
-        for label, monitor in self.monitor_map.items():
-            widgets = self.monitor_cards.get(label)
-            if not widgets:
-                continue
+        if self.settings.pause_preview_during_stream and self.is_streaming():
+            return
 
-            try:
-                shot = self.sct.grab(
-                    {
-                        "left": monitor.x,
-                        "top": monitor.y,
-                        "width": monitor.width,
-                        "height": monitor.height,
-                    }
-                )
-                image = Image.frombytes("RGB", shot.size, shot.rgb)
-                image.thumbnail((304, 180))
-                photo = ImageTk.PhotoImage(image)
-                self.preview_images[label] = photo
-                widgets["preview"].configure(image=photo, text="")
-            except Exception as exc:
-                widgets["preview"].configure(text=f"Preview unavailable\n{exc}", image="")
-
-        self.preview_job = self.root.after(self.settings.preview_interval_ms, self.update_previews)
+        self.update_selected_preview_once()
+        self.preview_job = self.root.after(
+            self.settings.preview_interval_ms,
+            self.schedule_preview_updates,
+        )
 
     def copy_stream_url(self) -> None:
         self.root.clipboard_clear()
@@ -623,7 +648,7 @@ class StreamingApp:
             messagebox.showinfo("Streaming", "A stream is already running.")
             return
 
-        command = build_stream_command(self.ffmpeg_path, monitor, url)
+        command = build_stream_command(self.ffmpeg_path, monitor, url, self.settings)
 
         try:
             self.process = subprocess.Popen(
@@ -642,6 +667,7 @@ class StreamingApp:
         self.start_button.configure(state="disabled", bg=PRIMARY_DARK)
         self.stop_button.configure(state="normal", bg=SURFACE_COLOR, fg=TEXT_COLOR)
         self.update_status_ui()
+        self.schedule_preview_updates()
         self.root.after(1000, self.check_process)
         self.update_stream_metrics()
 
@@ -679,6 +705,7 @@ class StreamingApp:
         self.start_button.configure(state="normal", bg=PRIMARY)
         self.stop_button.configure(state="disabled", bg=SURFACE_LOW, fg=OUTLINE_DARK)
         self.update_status_ui()
+        self.schedule_preview_updates()
 
     def stop_stream(self) -> None:
         if self.process and self.process.poll() is None:
@@ -695,6 +722,7 @@ class StreamingApp:
         self.start_button.configure(state="normal", bg=PRIMARY)
         self.stop_button.configure(state="disabled", bg=SURFACE_LOW, fg=OUTLINE_DARK)
         self.update_status_ui()
+        self.schedule_preview_updates()
 
     def reset_stream_metrics(self) -> None:
         if self.metrics_job:
@@ -705,9 +733,12 @@ class StreamingApp:
         self.uptime_text.set("--:--")
 
     def update_status_ui(self) -> None:
-        is_live = self.process is not None and self.process.poll() is None
+        is_live = self.is_streaming()
         self.footer_status_text.set("Live" if is_live else "Offline")
         self.status_dot.itemconfig(self.status_dot_id, fill=SUCCESS if is_live else ERROR, outline=SUCCESS if is_live else ERROR)
+
+    def is_streaming(self) -> bool:
+        return self.process is not None and self.process.poll() is None
 
     def bind_scroll_events(self) -> None:
         self.content_canvas.bind_all("<MouseWheel>", self._on_mousewheel)

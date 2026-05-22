@@ -1,5 +1,8 @@
 {
   "ffmpeg_path": "",
   "default_rtmp_url": "rtmp://",
-  "preview_interval_ms": 700
+  "preview_interval_ms": 700,
+  "stream_fps": 30,
+  "video_bitrate_kbps": 6000,
+  "pause_preview_during_stream": true
 }
