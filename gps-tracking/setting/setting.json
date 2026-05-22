@@ -6,7 +6,7 @@
     "serverIdleTimeoutSec": 60,
     "gpsAliveTimeoutSec": 10,
     "gpsCleanupIntervalSec": 1,
-    "droneOperationService": "http://localhost:40002",
+    "droneOperationService": "http://aerowatch-drone-operation:40002",
     "droneValidatePath": "/internal/drone/validate",
     "droneValidateEnabled": true,
     "droneValidateTimeoutSec": 5
