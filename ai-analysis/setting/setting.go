@@ -20,13 +20,26 @@ func Init() {
 	}
 
 	env, err := readEnvFile()
-	if err != nil && !os.IsNotExist(err) {
+	if os.IsNotExist(err) {
+		env = map[string]string{
+			Setting.OpenAI.APIKeyEnv:           os.Getenv(Setting.OpenAI.APIKeyEnv),
+			Setting.OpenAI.TextPrePromptEnv:    os.Getenv(Setting.OpenAI.TextPrePromptEnv),
+			Setting.OpenAI.TextPostPromptEnv:   os.Getenv(Setting.OpenAI.TextPostPromptEnv),
+			Setting.OpenAI.ImagePrePromptEnv:   os.Getenv(Setting.OpenAI.ImagePrePromptEnv),
+			Setting.OpenAI.ImagePostPromptEnv: os.Getenv(Setting.OpenAI.ImagePostPromptEnv),
+		}
+	} else if err != nil {
 		logging.Error(err)
 
 		os.Exit(1)
 	}
 
-	readOpenAIEnv(env)
+	Setting.OpenAI.APIKey = env[Setting.OpenAI.APIKeyEnv]
+	Setting.OpenAI.TextPrePrompt = env[Setting.OpenAI.TextPrePromptEnv]
+	Setting.OpenAI.TextPostPrompt = env[Setting.OpenAI.TextPostPromptEnv]
+	Setting.OpenAI.ImagePrePrompt = env[Setting.OpenAI.ImagePrePromptEnv]
+	Setting.OpenAI.ImagePostPrompt = env[Setting.OpenAI.ImagePostPromptEnv]
+
 	logging.Info("Successfully finished initializing setting.")
 }
 
@@ -74,20 +87,4 @@ func readEnvFile() (map[string]string, error) {
 	}
 
 	return env, nil
-}
-
-func readOpenAIEnv(env map[string]string) {
-	Setting.OpenAI.APIKey = readEnvValue(env, Setting.OpenAI.APIKeyEnv)
-	Setting.OpenAI.TextPrePrompt = readEnvValue(env, Setting.OpenAI.TextPrePromptEnv)
-	Setting.OpenAI.TextPostPrompt = readEnvValue(env, Setting.OpenAI.TextPostPromptEnv)
-	Setting.OpenAI.ImagePrePrompt = readEnvValue(env, Setting.OpenAI.ImagePrePromptEnv)
-	Setting.OpenAI.ImagePostPrompt = readEnvValue(env, Setting.OpenAI.ImagePostPromptEnv)
-}
-
-func readEnvValue(env map[string]string, key string) string {
-	if key == "" {
-		return ""
-	}
-
-	return env[key]
 }
