@@ -19,6 +19,12 @@
         "idColumn": "id",
         "contentColumn": "content"
     },
+    "droneDriverMatchTable": {
+        "name": "drone_driver_matches",
+        "driverIdColumn": "driver_id",
+        "groupColumn": "model_group",
+        "codeColumn": "code"
+    },
     "status": {
         "active": "active",
         "inactive": "inactive"

@@ -40,9 +40,19 @@ func (h *Handler) listDriverInfoHandler(w http.ResponseWriter, r *http.Request) 
 
 	responseInfos := make([]driverInfoResponseBody, 0, len(infos))
 	for _, info := range infos {
+		responseDrones := make([]droneResponseBody, 0, len(info.Drones))
+		for _, drone := range info.Drones {
+			responseDrones = append(responseDrones, droneResponseBody{
+				Group:  drone.Group,
+				Code:   drone.Code,
+				Status: drone.Status,
+			})
+		}
+
 		responseInfos = append(responseInfos, driverInfoResponseBody{
 			ID:      info.ID,
 			Content: info.Content,
+			Drones:  responseDrones,
 		})
 	}
 
