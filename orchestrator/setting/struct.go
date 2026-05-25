@@ -14,6 +14,7 @@ type serviceStruct struct {
 	Emergency      serviceConfig `json:"emergency"`
 	GPSTracking    serviceConfig `json:"gpsTracking"`
 	Streaming      serviceConfig `json:"streaming"`
+	WebClient      serviceConfig `json:"webClient"`
 }
 
 type serviceConfig struct {
