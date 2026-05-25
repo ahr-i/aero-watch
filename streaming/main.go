@@ -5,7 +5,6 @@ import (
 
 	"github.com/ahr-i/aero-watch/streaming/handler"
 	"github.com/ahr-i/aero-watch/streaming/setting"
-	"github.com/ahr-i/aero-watch/streaming/utils/corsController"
 	"github.com/ahr-i/aero-watch/streaming/utils/logging"
 
 	"github.com/urfave/negroni"
@@ -22,7 +21,7 @@ func startServerHTTP() {
 	defer mux.Close()
 
 	handler.Use(negroni.NewRecovery())
-	handler.Use(corsController.SetCors("*", "GET, POST, PUT, DELETE, OPTIONS", "*", true))
+	//handler.Use(corsController.SetCors("*", "GET, POST, PUT, DELETE, OPTIONS", "*", true))
 	handler.UseHandler(mux)
 
 	logging.Info("HTTP server start.")

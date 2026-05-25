@@ -21,6 +21,20 @@ server {
     client_max_body_size ${GATEWAY_CLIENT_MAX_BODY_SIZE};
 
     location / {
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin "${GATEWAY_CORS_ALLOW_ORIGIN}" always;
+            add_header Access-Control-Allow-Methods "${GATEWAY_CORS_ALLOW_METHODS}" always;
+            add_header Access-Control-Allow-Headers "${GATEWAY_CORS_ALLOW_HEADERS}" always;
+            add_header Access-Control-Max-Age 86400 always;
+            add_header Content-Length 0;
+            add_header Content-Type text/plain;
+            return 204;
+        }
+
+        add_header Access-Control-Allow-Origin "${GATEWAY_CORS_ALLOW_ORIGIN}" always;
+        add_header Access-Control-Allow-Methods "${GATEWAY_CORS_ALLOW_METHODS}" always;
+        add_header Access-Control-Allow-Headers "${GATEWAY_CORS_ALLOW_HEADERS}" always;
+
         proxy_pass http://aero_watch_backend;
         proxy_http_version 1.1;
 

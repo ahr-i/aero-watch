@@ -6,7 +6,6 @@ import (
 
 	"github.com/ahr-i/aero-watch/gps-tracking/handler"
 	"github.com/ahr-i/aero-watch/gps-tracking/setting"
-	"github.com/ahr-i/aero-watch/gps-tracking/utils/corsController"
 	"github.com/ahr-i/aero-watch/gps-tracking/utils/logging"
 
 	"github.com/urfave/negroni"
@@ -22,7 +21,7 @@ func startServerHTTP() {
 	handler := negroni.Classic()
 	defer mux.Close()
 
-	handler.Use(corsController.SetCors("*", "GET, POST, PUT, DELETE, OPTIONS", "*", true))
+	//handler.Use(corsController.SetCors("*", "GET, POST, PUT, DELETE, OPTIONS", "*", true))
 	handler.UseHandler(mux)
 
 	logging.Info("HTTP server start.")

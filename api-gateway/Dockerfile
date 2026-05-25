@@ -14,4 +14,4 @@ COPY nginx/templates/default.conf.template /etc/nginx/templates/default.conf.tem
 
 EXPOSE 443
 
-CMD ["sh", "-c", "envsubst '${GATEWAY_UPSTREAM} ${GATEWAY_SERVER_NAME} ${GATEWAY_SSL_CERTIFICATE} ${GATEWAY_SSL_CERTIFICATE_KEY} ${GATEWAY_CLIENT_MAX_BODY_SIZE}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -t && exec nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "envsubst '${GATEWAY_UPSTREAM} ${GATEWAY_SERVER_NAME} ${GATEWAY_SSL_CERTIFICATE} ${GATEWAY_SSL_CERTIFICATE_KEY} ${GATEWAY_CLIENT_MAX_BODY_SIZE} ${GATEWAY_CORS_ALLOW_ORIGIN} ${GATEWAY_CORS_ALLOW_METHODS} ${GATEWAY_CORS_ALLOW_HEADERS}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -t && exec nginx -g 'daemon off;'"]
