@@ -1,0 +1,14 @@
+AGENTS.md
+.env
+.venv/
+__pycache__
+stitch-assets/
+stitch/
+hls/
+design
+mysql
+captures/
+240901.csv
+api-gateway/certbot/conf/*
+!api-gateway/certbot/conf/.gitkeep
+frontend/

@@ -1,0 +1,31 @@
+{
+    "serverPort": "40001",
+    "db": {
+        "type": "mysql",
+        "host": "db-mysql",
+        "port": "3306",
+        "name": "aerowatch",
+        "userEnv": "DB_USER",
+        "passwordEnv": "DB_PASSWORD"
+    },
+    "jwt": {
+        "secretEnv": "JWT_SECRET",
+        "accessTokenExpireMin": 60
+    },
+    "admin": {
+        "userEnv": "ADMIN_USER",
+        "passwordEnv": "ADMIN_PASSWORD"
+    },
+    "role": {
+        "admin": "admin",
+        "unverified": "unverified",
+        "active": "active"
+    },
+    "userTable": {
+        "name": "users",
+        "usernameColumn": "username",
+        "passwordHashColumn": "password_hash",
+        "roleColumn": "role",
+        "createdAtColumn": "created_at"
+    }
+}

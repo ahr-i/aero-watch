@@ -1,0 +1,32 @@
+{
+    "serverPort": "40002",
+    "db": {
+        "type": "mysql",
+        "host": "db-mysql",
+        "port": "3306",
+        "name": "aerowatch",
+        "userEnv": "DRONE_DB_USER",
+        "passwordEnv": "DRONE_DB_PASSWORD"
+    },
+    "droneTable": {
+        "name": "drone_models",
+        "groupColumn": "model_group",
+        "codeColumn": "code",
+        "statusColumn": "status"
+    },
+    "driverInfoTable": {
+        "name": "driver_infos",
+        "idColumn": "id",
+        "contentColumn": "content"
+    },
+    "droneDriverMatchTable": {
+        "name": "drone_driver_matches",
+        "driverIdColumn": "driver_id",
+        "groupColumn": "model_group",
+        "codeColumn": "code"
+    },
+    "status": {
+        "active": "active",
+        "inactive": "inactive"
+    }
+}

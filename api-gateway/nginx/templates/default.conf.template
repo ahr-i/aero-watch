@@ -1,0 +1,53 @@
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
+upstream aero_watch_backend {
+    server ${GATEWAY_UPSTREAM};
+    keepalive 32;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name ${GATEWAY_SERVER_NAME};
+
+    ssl_certificate ${GATEWAY_SSL_CERTIFICATE};
+    ssl_certificate_key ${GATEWAY_SSL_CERTIFICATE_KEY};
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    client_max_body_size ${GATEWAY_CLIENT_MAX_BODY_SIZE};
+
+    location / {
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin "${GATEWAY_CORS_ALLOW_ORIGIN}" always;
+            add_header Access-Control-Allow-Methods "${GATEWAY_CORS_ALLOW_METHODS}" always;
+            add_header Access-Control-Allow-Headers "${GATEWAY_CORS_ALLOW_HEADERS}" always;
+            add_header Access-Control-Max-Age 86400 always;
+            add_header Content-Length 0;
+            add_header Content-Type text/plain;
+            return 204;
+        }
+
+        add_header Access-Control-Allow-Origin "${GATEWAY_CORS_ALLOW_ORIGIN}" always;
+        add_header Access-Control-Allow-Methods "${GATEWAY_CORS_ALLOW_METHODS}" always;
+        add_header Access-Control-Allow-Headers "${GATEWAY_CORS_ALLOW_HEADERS}" always;
+
+        proxy_pass http://aero_watch_backend;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
+        proxy_connect_timeout 10s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "serverPort": "40008",
+    "services": {
+        "aiAnalysis": {
+            "baseUrl": "http://ai-analysis:40006"
+        },
+        "auth": {
+            "baseUrl": "http://auth:40001"
+        },
+        "droneOperation": {
+            "baseUrl": "http://drone-operation:40002"
+        },
+        "emergency": {
+            "baseUrl": "http://emergency:40005"
+        },
+        "gpsTracking": {
+            "baseUrl": "http://gps-tracking:40003"
+        },
+        "streaming": {
+            "baseUrl": "http://streaming:40004"
+        },
+        "webClient": {
+            "baseUrl": "http://web-client:40009"
+        }
+    }
+}

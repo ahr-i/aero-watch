@@ -1,0 +1,6 @@
+.env
+.git
+.agents
+.codex
+certbot/conf/*
+!certbot/conf/.gitkeep

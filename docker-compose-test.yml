@@ -1,0 +1,128 @@
+services:
+  db-mysql:
+    image: mysql:8.4
+    container_name: db-mysql
+    env_file:
+      - ./db/.env
+    volumes:
+      - ./db/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    ports:
+      - 43306:3306
+    networks:
+      - aerowatch
+
+  auth:
+    build: ./auth
+    image: aerowatch-auth
+    container_name: auth
+    env_file:
+      - ./auth/.env
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    ports:
+      - 40001:40001
+    networks:
+      - aerowatch
+  
+  drone-operation:
+    build: ./drone-operation
+    image: aerowatch-drone-operation
+    container_name: drone-operation
+    env_file:
+      - ./drone-operation/.env
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    ports:
+      - 40002:40002
+    networks:
+      - aerowatch
+
+  gps-tracking:
+    build: ./gps-tracking
+    image: aerowatch-gps-tracking
+    container_name: gps-tracking
+    ports:
+      - 40003:40003
+    networks:
+      - aerowatch
+
+  streaming:
+    build: ./streaming
+    image: aerowatch-streaming
+    container_name: streaming
+    ports:
+      - 41935:41935
+      - 40004:40004
+    networks:
+      - aerowatch
+      
+  emergency:
+    build: ./emergency
+    image: aerowatch-emergency
+    container_name: emergency
+    env_file:
+      - ./emergency/.env
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    ports:
+      - 40005:40005
+    networks:
+      - aerowatch
+
+  ai-analysis:
+    build: ./ai-analysis
+    image: aerowatch-ai-analysis
+    container_name: ai-analysis
+    env_file:
+      - ./ai-analysis/.env
+    volumes:
+      - ./ai-analysis/questionHistory:/app/questionHistory
+    ports:
+      - 40006:40006
+    networks:
+      - aerowatch
+
+  orchestrator:
+    build: ./orchestrator
+    image: aerowatch-orchestrator
+    container_name: orchestrator
+    ports:
+      - 40008:40008
+    networks:
+      - aerowatch
+
+  api-gateway:
+    build: ./api-gateway
+    image: aerowatch-api-gateway
+    container_name: api-gateway
+    env_file:
+      - ./api-gateway/.env
+    volumes:
+      - ./api-gateway/certbot/conf:/etc/letsencrypt:ro
+    ports:
+      - 443:443
+    networks:
+      - aerowatch
+
+  
+  web-client:
+    build: ./web-client
+    image: aerowatch-web-client
+    container_name: web-client
+    ports:
+      - 40009:40009
+    networks:
+      - aerowatch
+
+name: aerowatch-test
+networks:
+  aerowatch:

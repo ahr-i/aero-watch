@@ -1,0 +1,6 @@
+.env
+.git
+.agents
+.codex
+Dockerfile
+questionHistory

@@ -1,0 +1,13 @@
+{
+    "serverPort": "40003",
+    "serverReadHeaderTimeoutSec": 5,
+    "serverReadTimeoutSec": 10,
+    "serverWriteTimeoutSec": 10,
+    "serverIdleTimeoutSec": 60,
+    "gpsAliveTimeoutSec": 10,
+    "gpsCleanupIntervalSec": 1,
+    "droneOperationService": "http://drone-operation:40002",
+    "droneValidatePath": "/internal/drone/validate",
+    "droneValidateEnabled": true,
+    "droneValidateTimeoutSec": 5
+}

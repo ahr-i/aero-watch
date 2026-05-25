@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Aero Watch Streams</title>
+	<style>
+		body { margin: 0; font-family: Arial, sans-serif; background: #f6f7f9; color: #20242a; }
+		header { padding: 24px 32px; background: #101820; color: white; }
+		main { max-width: 960px; margin: 28px auto; padding: 0 20px; }
+		.toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; color: #59616d; font-size: 14px; }
+		table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #dde1e7; }
+		th, td { padding: 12px 14px; border-bottom: 1px solid #e8ebef; text-align: left; }
+		th { background: #f0f3f7; font-size: 13px; }
+		a { color: #0b65c2; text-decoration: none; }
+		.empty { padding: 28px; background: white; border: 1px solid #dde1e7; }
+		.badge { display: inline-block; padding: 3px 8px; border-radius: 999px; background: #e4f8ec; color: #137333; font-size: 12px; font-weight: 700; }
+		.action { font-weight: 700; }
+	</style>
+</head>
+<body>
+	<header><h1>Live Drone Streams</h1></header>
+	<main>
+		<div class="toolbar">
+			<div id="summary">목록을 불러오는 중...</div>
+			<div id="updated-at"></div>
+		</div>
+		<div id="stream-list">
+			{{if .Streams}}
+			<table>
+				<thead><tr><th>Stream</th><th>Group</th><th>Code</th><th>Status</th><th>Started At</th><th></th></tr></thead>
+				<tbody>
+				{{range .Streams}}
+					<tr>
+						<td>{{.StreamKey}}</td>
+						<td>{{.Group}}</td>
+						<td>{{.Code}}</td>
+						<td><span class="badge">LIVE</span></td>
+						<td>{{.StartedAt}}</td>
+						<td><a class="action" href="{{.AdminPath}}">보기</a></td>
+					</tr>
+				{{end}}
+				</tbody>
+			</table>
+			{{else}}
+			<div class="empty">현재 스트리밍 중인 드론이 없습니다.</div>
+			{{end}}
+		</div>
+	</main>
+	<script>
+		const list = document.getElementById("stream-list");
+		const summary = document.getElementById("summary");
+		const updatedAt = document.getElementById("updated-at");
+
+		function escapeHTML(value) {
+			return String(value).replace(/[&<>"']/g, (char) => ({
+				"&": "&amp;",
+				"<": "&lt;",
+				">": "&gt;",
+				'"': "&quot;",
+				"'": "&#39;"
+			}[char]));
+		}
+
+		function adminPath(stream) {
+			return "/admin/streams/" + encodeURIComponent(stream.group) + "/" + encodeURIComponent(stream.code);
+		}
+
+		function renderStreams(streams) {
+			summary.textContent = "현재 라이브 " + streams.length + "개";
+			updatedAt.textContent = "마지막 갱신 " + new Date().toLocaleTimeString();
+
+			if (streams.length === 0) {
+				list.innerHTML = '<div class="empty">현재 스트리밍 중인 드론이 없습니다.</div>';
+				return;
+			}
+
+			const rows = streams.map((stream) => `
+				<tr>
+					<td>${escapeHTML(stream.streamKey)}</td>
+					<td>${escapeHTML(stream.group)}</td>
+					<td>${escapeHTML(stream.code)}</td>
+					<td><span class="badge">${escapeHTML(stream.status)}</span></td>
+					<td>${escapeHTML(stream.startedAt)}</td>
+					<td><a class="action" href="${adminPath(stream)}">보기</a></td>
+				</tr>
+			`).join("");
+
+			list.innerHTML = `
+				<table>
+					<thead><tr><th>Stream</th><th>Group</th><th>Code</th><th>Status</th><th>Started At</th><th></th></tr></thead>
+					<tbody>${rows}</tbody>
+				</table>
+			`;
+		}
+
+		async function refreshStreams() {
+			try {
+				const response = await fetch("/api/v1/streams/live", { cache: "no-store" });
+				const data = await response.json();
+				renderStreams(data.streams || []);
+			} catch (error) {
+				summary.textContent = "목록 갱신 실패";
+			}
+		}
+
+		refreshStreams();
+		setInterval(refreshStreams, 3000);
+	</script>
+</body>
+</html>
