@@ -7,6 +7,7 @@ import (
 	emergencyController "github.com/ahr-i/aero-watch/ochestrator/serviceController/emergency"
 	gpsTrackingController "github.com/ahr-i/aero-watch/ochestrator/serviceController/gpsTracking"
 	streamingController "github.com/ahr-i/aero-watch/ochestrator/serviceController/streaming"
+	webClientController "github.com/ahr-i/aero-watch/ochestrator/serviceController/webClient"
 	"github.com/ahr-i/aero-watch/ochestrator/setting"
 	"github.com/ahr-i/aero-watch/ochestrator/utils/logging"
 	"github.com/gorilla/mux"
@@ -45,6 +46,11 @@ func CreateHandler() *Handler {
 		logging.Error(err)
 		panic(err)
 	}
+	webClientService, err := webClientController.New(setting.Setting.Services.WebClient.BaseURL)
+	if err != nil {
+		logging.Error(err)
+		panic(err)
+	}
 
 	handler := &Handler{
 		Handler:                  mux,
@@ -54,6 +60,7 @@ func CreateHandler() *Handler {
 		emergencyController:      emergencyService,
 		gpsTrackingController:    gpsTrackingService,
 		streamingController:      streamingService,
+		webClientController:      webClientService,
 	}
 
 	mux.HandleFunc("/ping", handler.pingHandler).Methods("GET")
@@ -63,6 +70,7 @@ func CreateHandler() *Handler {
 	handler.registerEmergencyRoutes(mux)
 	handler.registerGPSTrackingRoutes(mux)
 	handler.registerStreamingRoutes(mux)
+	handler.registerWebClientRoutes(mux)
 
 	return handler
 }

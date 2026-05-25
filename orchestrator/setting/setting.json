@@ -18,6 +18,9 @@
         },
         "streaming": {
             "baseUrl": "http://streaming:40004"
+        },
+        "webClient": {
+            "baseUrl": "http://web-client:40009"
         }
     }
 }

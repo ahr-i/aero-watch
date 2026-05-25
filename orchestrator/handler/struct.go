@@ -9,6 +9,7 @@ import (
 	emergencyController "github.com/ahr-i/aero-watch/ochestrator/serviceController/emergency"
 	gpsTrackingController "github.com/ahr-i/aero-watch/ochestrator/serviceController/gpsTracking"
 	streamingController "github.com/ahr-i/aero-watch/ochestrator/serviceController/streaming"
+	webClientController "github.com/ahr-i/aero-watch/ochestrator/serviceController/webClient"
 	"github.com/unrolled/render"
 )
 
@@ -22,6 +23,7 @@ type Handler struct {
 	emergencyController      *emergencyController.Controller
 	gpsTrackingController    *gpsTrackingController.Controller
 	streamingController      *streamingController.Controller
+	webClientController      *webClientController.Controller
 }
 
 type requestBody struct {
