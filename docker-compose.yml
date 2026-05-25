@@ -63,6 +63,8 @@ services:
     container_name: ai-analysis
     env_file:
       - ./ai-analysis/.env
+    volumes:
+      - ./ai-analysis/questionHistory:/app/questionHistory
 
   orchestrator:
     build: ./orchestrator
@@ -79,5 +81,10 @@ services:
       - ./api-gateway/certbot/conf:/etc/letsencrypt:ro
     ports:
       - 443:443
+
+  web-client:
+    build: ./web-client
+    image: aerowatch-web-client
+    container_name: web-client
 
 name: aerowatch
