@@ -14,10 +14,12 @@ type Handler struct {
 
 type requestBody struct {
 	Prompt string `json:"prompt"`
+	User   string `json:"user"`
 }
 
 type imageRequestBody struct {
 	Prompt      string `json:"prompt"`
+	User        string `json:"user"`
 	ImageBase64 string `json:"imageBase64"`
 	ImageType   string `json:"imageType,omitempty"`
 }

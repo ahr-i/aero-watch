@@ -4,6 +4,7 @@ var Setting settingStruct
 
 type settingStruct struct {
 	ServerPort string       `json:"serverPort"`
+	HistoryDir string       `json:"historyDir"`
 	OpenAI     openAIStruct `json:"openai"`
 }
 
