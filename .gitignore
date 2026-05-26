@@ -12,4 +12,4 @@ captures/
 api-gateway/certbot/conf/*
 !api-gateway/certbot/conf/.gitkeep
 frontend/
-web-client/dist/*
+web-client/dist
