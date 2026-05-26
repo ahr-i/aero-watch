@@ -20,7 +20,6 @@ RUN apt-get update \
 
 COPY --from=builder /out/web-client ./web-client
 COPY setting ./setting
-COPY dist ./dist
 
 EXPOSE 40009
 
