@@ -41,6 +41,14 @@ type updateRoleResponseBody struct {
 	Role string `json:"role"`
 }
 
+type deleteUserRequestBody struct {
+	User string `json:"user"`
+}
+
+type deleteUserResponseBody struct {
+	User string `json:"user"`
+}
+
 type listUsersResponseBody struct {
 	Users []userResponseBody `json:"users"`
 }

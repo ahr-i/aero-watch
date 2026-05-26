@@ -205,6 +205,35 @@ func (s *MySQLStore) UpdateUserRole(user string, role string) error {
 	return nil
 }
 
+func (s *MySQLStore) DeleteUser(user string) error {
+	table, err := sqlIdentifier(setting.Setting.UserTable.Name)
+	if err != nil {
+		return err
+	}
+
+	usernameColumn, err := sqlIdentifier(setting.Setting.UserTable.UsernameColumn)
+	if err != nil {
+		return err
+	}
+
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ?", table, usernameColumn)
+	result, err := s.db.Exec(query, user)
+	if err != nil {
+		return err
+	}
+
+	affectedRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affectedRows == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}
+
 func (s *MySQLStore) Close() error {
 	if s.db == nil {
 		return nil

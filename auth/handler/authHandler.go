@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -24,6 +25,21 @@ func (h *Handler) signupHandler(w http.ResponseWriter, r *http.Request) {
 
 	if body.User == "" || body.Password == "" {
 		rend.JSON(w, http.StatusBadRequest, errorResponseBody{Error: "user and password are required"})
+		return
+	}
+
+	if len(body.User) < 4 {
+		rend.JSON(w, http.StatusBadRequest, errorResponseBody{Error: "user must be at least 4 characters"})
+		return
+	}
+
+	if len(body.Password) < 6 {
+		rend.JSON(w, http.StatusBadRequest, errorResponseBody{Error: "password must be at least 6 characters"})
+		return
+	}
+
+	if !signupValueRegexp.MatchString(body.User) || !signupValueRegexp.MatchString(body.Password) {
+		rend.JSON(w, http.StatusBadRequest, errorResponseBody{Error: "user and password can contain only letters, numbers, and special characters"})
 		return
 	}
 
@@ -49,6 +65,8 @@ func (h *Handler) signupHandler(w http.ResponseWriter, r *http.Request) {
 		Role: setting.Setting.Role.Unverified,
 	})
 }
+
+var signupValueRegexp = regexp.MustCompile(`^[!-~]+$`)
 
 func (h *Handler) loginHandler(w http.ResponseWriter, r *http.Request) {
 	var body loginRequestBody
@@ -108,6 +126,32 @@ func (h *Handler) listUsersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rend.JSON(w, http.StatusOK, listUsersResponseBody{Users: responseUsers})
+}
+
+func (h *Handler) deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	var body deleteUserRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		rend.JSON(w, http.StatusBadRequest, errorResponseBody{Error: "invalid request body"})
+		return
+	}
+
+	if body.User == "" {
+		rend.JSON(w, http.StatusBadRequest, errorResponseBody{Error: "user is required"})
+		return
+	}
+
+	err := h.store.DeleteUser(body.User)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			rend.JSON(w, http.StatusNotFound, errorResponseBody{Error: "user not found"})
+			return
+		}
+
+		rend.JSON(w, http.StatusInternalServerError, errorResponseBody{Error: "failed to delete user"})
+		return
+	}
+
+	rend.JSON(w, http.StatusOK, deleteUserResponseBody{User: body.User})
 }
 
 func (h *Handler) verifyHandler(w http.ResponseWriter, r *http.Request) {

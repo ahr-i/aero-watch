@@ -1,3 +1,4 @@
 {
-    "serverPort":"40009"
+    "serverPort": "40009",
+    "distPath": "./dist"
 }

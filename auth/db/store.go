@@ -16,6 +16,7 @@ type Store interface {
 	FindUserAuthInfo(user string) (UserAuthInfo, error)
 	ListUsers() ([]UserInfo, error)
 	UpdateUserRole(user string, role string) error
+	DeleteUser(user string) error
 	Close() error
 }
 

@@ -118,6 +118,8 @@ services:
     build: ./web-client
     image: aerowatch-web-client
     container_name: web-client
+    volumes:
+      - ./frontend/web/dist:/app/dist
     ports:
       - 40009:40009
     networks:

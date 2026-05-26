@@ -13,6 +13,7 @@ func (h *Handler) registerAuthRoutes(mux *mux.Router) {
 	mux.HandleFunc("/user/auth/role", h.authUserProxyHandler).Methods(http.MethodGet)
 	mux.HandleFunc("/admin/auth/role", h.authAdminProxyHandler).Methods(http.MethodPut)
 	mux.HandleFunc("/admin/auth/users", h.authAdminProxyHandler).Methods(http.MethodGet)
+	mux.HandleFunc("/admin/auth/users", h.authAdminProxyHandler).Methods(http.MethodDelete)
 }
 
 func (h *Handler) authAllProxyHandler(w http.ResponseWriter, r *http.Request) {
